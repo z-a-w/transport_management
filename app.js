@@ -1,7 +1,7 @@
 const express = require("express");
 const validator = require("express-validator");
 const bodyParser = require("body-parser");
-const config = require("./config");
+const config = require("./ config");
 
 /**
  *  Import routes here
