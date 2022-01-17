@@ -152,6 +152,36 @@ router.post("/login", (req, res) => {
   });
 });
 
+// Verify user's jwt
+router.get('/auth/verify-jwt', auth.verifyToken(), async (req, res) => {
+  var userId = req.user.user_id;
+  try {
+    var user = await getUser(userId);
+    res.status(200).json(user);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
+
+/**
+ * Get the user data with userId
+ * @param {String} userId 
+ * @returns {Object}
+ */
+function getUser(userId) {
+  return new Promise((resolve, reject) => {
+    db.users.findOne({ _id: mongojs.ObjectId(userId) }, (err, data) => {
+      if (err) reject(err);
+      else if (!data) resolve(false);
+      else return resolve(data);
+    });
+  });
+}
+/**
+ * Check given user exists or not
+ * @param {String} username 
+ * @returns {Boolean}
+ */
 function isUserExists(username) {
   return new Promise((resolve, reject) => {
     db.users.findOne({ username }, (err, data) => {
