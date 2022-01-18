@@ -10,7 +10,7 @@ const Promise = require("core-js-pure/features/promise");
 const config = require("../ config");
 
 // Get all users
-router.get("/", auth.verifyToken(), (req, res) => {
+router.get("/", auth, (req, res) => {
   db.users.find({}, (err, data) => {
     helper.respondToUser(res, err, data);
   });
@@ -51,7 +51,7 @@ router.post("/", auth, async (req, res) => {
 
   // Validate if user already exists
   try {
-    if (await isUserExists())
+    if (await isUserExists(req.body.name))
       return res.status(409).send("User already exists");
   } catch (err) {
     res.status(500).json(err);
@@ -78,7 +78,7 @@ router.post("/", auth, async (req, res) => {
 });
 
 // Update a user
-router.put("/:id", auth.verifyToken(), (req, res) => {
+router.put("/:id", auth, (req, res) => {
   // Validation
   req.checkBody("name", "Name should not be empty").notEmpty();
   req.checkBody("role", "Role should not be empty").notEmpty();
@@ -153,7 +153,7 @@ router.post("/login", (req, res) => {
 });
 
 // Verify user's jwt
-router.get('/auth/verify-jwt', auth.verifyToken(), async (req, res) => {
+router.get("/auth/verify-jwt", auth, async (req, res) => {
   var userId = req.user.user_id;
   try {
     var user = await getUser(userId);
@@ -165,7 +165,7 @@ router.get('/auth/verify-jwt', auth.verifyToken(), async (req, res) => {
 
 /**
  * Get the user data with userId
- * @param {String} userId 
+ * @param {String} userId
  * @returns {Object}
  */
 function getUser(userId) {
@@ -179,15 +179,17 @@ function getUser(userId) {
 }
 /**
  * Check given user exists or not
- * @param {String} username 
+ * @param {String} username
  * @returns {Boolean}
  */
-function isUserExists(username) {
+function isUserExists(name) {
   return new Promise((resolve, reject) => {
-    db.users.findOne({ username }, (err, data) => {
+    db.users.findOne({ name }, (err, data) => {
       if (err) reject(err);
       else if (!data) resolve(false);
       else return resolve(true);
     });
   });
 }
+
+module.exports = router;

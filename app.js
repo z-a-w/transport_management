@@ -6,6 +6,9 @@ const config = require("./ config");
 /**
  *  Import routes here
  */
+const users = require("./routes/users");
+const vehicles = require("./routes/vehicles");
+const tasks = require("./routes/tasks");
 
 // Initialze a express application
 const app = express();
@@ -24,6 +27,10 @@ app.use((req, res, next) => {
 /**
  *  Use routes here
  */
+app.use("/api/users", users);
+// app.use("/vehicles", vehicles);
+// app.use("/tasks", tasks);
+
 app.listen(3000, () => {
   console.log(
     " < TRANSPORT MANAGEMENT API > \n Express server is running at port 3000 \n"
